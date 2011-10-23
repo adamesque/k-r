@@ -8,37 +8,43 @@ void copy(char to[], char from[]);
  * so it will correctly print the length of arbitrarily
  * long input lines, and as much as possible of the text.
  *
+ * Somewhat better solution c.f.
+ * https://github.com/thvdburgt/KnR-The-C-Programming-Language-Solutions/blob/master/Chapter%201/1-16/longestline.c
+ *
  * The tricky part is ONLY modifying main() and not getline() */
 
 /* print longest input line */
 main()
 {
 	int i;
-	int len, extralen;		/* current line lengths */
+	int len, prevlen;		/* current line lengths */
 	int max;				/* maximum length seen so far */
 	char line[MAXLINE];		/* current input line */
 	char longest[MAXLINE];	/* longest line saved here */
+	char temp[MAXLINE];		/* start of line before we ran out of mem */
 
-	max = 0;
+	max = prevlen = 0;
 	while ((len = getaline(line, MAXLINE)) > 0) {
-		extralen = len;
-		/* if the line buffer is full but the last
-		 * character isn't a new line, take another
-		 * bite */
-		while (extralen==MAXLINE-1 && line[MAXLINE-2] != '\n' && (extralen = getaline(line, MAXLINE)) > 0) {
-			len = len + extralen;	
+		if (prevlen + len > max) {
+			max = prevlen + len;
+			if (!prevlen)
+				copy(longest, line);
+			else
+				copy(longest, temp);
 		}
-
-		if (len > max) {
-			max = len;
-			copy(longest, line);
-		}
+		
+		if (line[len-1] != '\n') {
+			if (!prevlen) /* copy start of line to temp */
+				copy(temp, line);
+			prevlen = prevlen + len;
+		} else 
+			prevlen = 0;
 	}
 	if (max > 0) {	/* there was a line */
 		printf("%d\n", max);
+		printf("%s", longest);
 		if (max > MAXLINE)
 			printf("...");
-		printf("%s", longest);
 	}
 	return 0;
 }
