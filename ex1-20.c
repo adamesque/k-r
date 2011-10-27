@@ -12,8 +12,6 @@ main()
 
 	col = 0;
 	while ((c = getchar()) != EOF) {
-		// printf("(col: %d)", col);
-
 		if (c == '\t') {
 			col = col + expand_tab(col);
 		}
@@ -35,7 +33,7 @@ int expand_tab(int col)
 {
 	int i, num_spaces, remainder;
 
-	remainder = col - ((col / TABSIZE) * TABSIZE);
+	remainder = col - ((col / TABSIZE) * TABSIZE); /* we have not yet encountered the modulo operator */
 	num_spaces = TABSIZE - remainder;
 	for (i = num_spaces; i > 0; --i)
 		putchar(' ');
